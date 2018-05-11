@@ -1,0 +1,14 @@
+# ---------------[ UE4 generated ]------------------ # 
+[Bb]inaries/ 
+[Dd]erivedDataCache/ 
+[Ii]ntermediate/ 
+[Ss]aved/ 
+ 
+# ---------------[ Visual Studio solutions ]------------------ # 
+*.sln 
+*.sdf 
+*.opensdf 
+*.suo 
+
+.vs
+Binaries

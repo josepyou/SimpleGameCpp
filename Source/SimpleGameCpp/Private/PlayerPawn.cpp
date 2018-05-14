@@ -16,11 +16,16 @@ APlayerPawn::APlayerPawn()
 APlayerPawn::APlayerPawn(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	USceneComponent* NewRootSceneComponent = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("NewRootComponent"));
+	if (NewRootSceneComponent != nullptr)
+	{
+		RootComponent = NewRootSceneComponent;
+	}
+
 	StaticMeshComponent = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("StaticMesh"));
-	
 	if (StaticMeshComponent != nullptr)
 	{
-		RootComponent = StaticMeshComponent;
+		StaticMeshComponent->SetupAttachment(RootComponent);
 	}
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>PlayerMeshObj(TEXT("/Game/SM_Player.SM_Player"));

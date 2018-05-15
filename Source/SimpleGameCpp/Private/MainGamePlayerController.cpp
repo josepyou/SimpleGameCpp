@@ -1,6 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MainGamePlayerController.h"
+#include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "PlayerPawn.h"
 

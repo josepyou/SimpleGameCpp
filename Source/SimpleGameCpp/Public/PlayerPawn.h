@@ -35,14 +35,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	uint32 bAddDefaultMovementBindings = 1;
-
-	UFUNCTION(BlueprintCallable, Category = "Pawn | Input", meta = (Keywords = "Left right turn addyaw"))
-		virtual void AddControllerYawInput(float Val) override;
-
-	void InitializeDefaultPawnInputBindings();
-
 };

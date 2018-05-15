@@ -56,19 +56,6 @@ void APlayerPawn::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
-void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	if (bAddDefaultMovementBindings)
-	{
-		InitializeDefaultPawnInputBindings();
-		PlayerInputComponent->BindAxis("DefaultPawn_Turn", this, &APlayerPawn::AddControllerYawInput);
-	}
-
-}
-
 FVector APlayerPawn::GetPlayerMoveDirection(float Direction) const
 {
 	//UE_LOG(LogTemp, Log, TEXT("MyIntValue=%d"), 5656);
@@ -76,24 +63,7 @@ FVector APlayerPawn::GetPlayerMoveDirection(float Direction) const
 	return (FVector(10.0f, 0.0f, 0.0f) * Direction) + GetActorLocation();
 }
 
-void APlayerPawn::AddControllerYawInput(float Val)
-{
-	Super::AddControllerYawInput(Val);
-	SetActorLocation(GetPlayerMoveDirection(Val));
-}
-
-
 void APlayerPawn::MouseMovePitchInput(float val)
 {
 	SetActorLocation(GetPlayerMoveDirection(val));
-}
-
-void APlayerPawn::InitializeDefaultPawnInputBindings()
-{
-	static bool bBindingsAdded = false;
-	if (!bBindingsAdded)
-	{
-		bBindingsAdded = true;
-		UPlayerInput::AddEngineDefinedAxisMapping(FInputAxisKeyMapping("DefaultPawn_Turn", EKeys::MouseX, 1.f));
-	}
 }

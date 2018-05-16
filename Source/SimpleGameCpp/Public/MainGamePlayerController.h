@@ -19,4 +19,5 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (Keywords = "up down"))
 		virtual void AddPitchInput(float val) override;
+	void Fire();
 };

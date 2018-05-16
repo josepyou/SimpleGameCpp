@@ -19,6 +19,9 @@ private:
 	UFUNCTION(BlueprintPure)
 	FVector GetPlayerMoveDirection(float Direction) const;
 
+	UPROPERTY()
+		TSubclassOf<class APlayerProjectile> ProjectileClass;
+
 public:
 	// Sets default values for this pawn's properties
 	APlayerPawn();
@@ -36,4 +39,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	uint32 bAddDefaultMovementBindings = 1;
+
+	void Fire();
 };

@@ -16,7 +16,6 @@ APlayerProjectile::APlayerProjectile()
 void APlayerProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	MoveProjectile(FVector(0.0f, 400.0f, 0.0f), DeltaTime);
 }
 

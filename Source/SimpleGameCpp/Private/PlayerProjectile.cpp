@@ -2,6 +2,7 @@
 
 #include "PlayerProjectile.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Engine/World.h"
 
 APlayerProjectile::APlayerProjectile()
 	: Super()
@@ -11,6 +12,8 @@ APlayerProjectile::APlayerProjectile()
 	{
 		StaticMeshComponent->SetStaticMesh(ProjectileMesh.Object);
 	}
+
+	OnActorBeginOverlap.AddDynamic(this, &APlayerProjectile::OnBeginOverlap);
 }
 
 void APlayerProjectile::Tick(float DeltaTime)
@@ -19,3 +22,11 @@ void APlayerProjectile::Tick(float DeltaTime)
 	MoveProjectile(FVector(0.0f, 400.0f, 0.0f), DeltaTime);
 }
 
+void APlayerProjectile::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	UWorld* World = GetWorld();
+	if (World != nullptr)
+	{
+		World->DestroyActor(this);
+	}
+}

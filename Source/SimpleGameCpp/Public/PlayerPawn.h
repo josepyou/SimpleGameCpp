@@ -14,13 +14,16 @@ class SIMPLEGAMECPP_API APlayerPawn : public ADefaultPawn
 
 private:
 	UPROPERTY(BlueprintReadonly, VisibleAnywhere, Category = "PlayerMesh", meta = (AllowPrivateAccess = true))
-	class UStaticMeshComponent* StaticMeshComponent;
+		class UStaticMeshComponent* StaticMeshComponent;
 
 	UFUNCTION(BlueprintPure)
-	FVector GetPlayerMoveDirection(float Direction) const;
+		FVector GetPlayerMoveDirection(float Direction) const;
 
 	UPROPERTY()
 		TSubclassOf<class APlayerProjectile> ProjectileClass;
+
+	UPROPERTY()
+		TSubclassOf<AActor> ExplosionClass;
 
 public:
 	// Sets default values for this pawn's properties
@@ -29,6 +32,9 @@ public:
 
 	UFUNCTION()
 		void MouseMovePitchInput(float val);
+
+	UFUNCTION()
+		void OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 protected:
 	// Called when the game starts or when spawned

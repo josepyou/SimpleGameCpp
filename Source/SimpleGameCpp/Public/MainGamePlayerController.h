@@ -14,6 +14,9 @@ class SIMPLEGAMECPP_API AMainGamePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+public:
+	AMainGamePlayerController();
+
 private:
 	UPROPERTY()
 		TArray<class AGameCameraActor*> GameCameras;
@@ -28,4 +31,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (Keywords = "up down"))
 		virtual void AddPitchInput(float val) override;
 	void Fire();
+
+	UFUNCTION()
+		void OnPauseMenu();
+	
+	UPROPERTY()
+		TSubclassOf<class UPauseMenuWidget> PauseMenuWidgetClass;
+
+	UPROPERTY()
+		class UPauseMenuWidget* PauseMenuWidget;
+
+	UFUNCTION()
+		void OnPauseMenuGotoTitleButton();
+
+	UFUNCTION()
+		void OnPauseMenuCloseButton();
 };

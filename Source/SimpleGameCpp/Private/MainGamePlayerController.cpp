@@ -4,6 +4,8 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "PlayerPawn.h"
+#include "GameCameraActor.h"
+#include "Kismet/GameplayStatics.h"
 
 void AMainGamePlayerController::SetupInputComponent()
 {
@@ -34,4 +36,37 @@ void AMainGamePlayerController::Fire()
 	{
 		PossessedPawn->Fire();
 	}
+}
+
+void AMainGamePlayerController::BeginPlay()
+{
+	TArray<AActor*> FindedActors;
+	UGameplayStatics::GetAllActorsOfClass(this, AGameCameraActor::StaticClass(), FindedActors);
+
+	for (AActor* Actor : FindedActors)
+	{
+		AGameCameraActor* Camera = Cast<AGameCameraActor>(Actor);
+		if (Camera != nullptr)
+		{
+			GameCameras.Add(Camera);
+		}
+	}
+
+	Super::BeginPlay();
+}
+
+AGameCameraActor* AMainGamePlayerController::ChangeGameCamera(const FName& Tag)
+{
+	for (AGameCameraActor* Camera : GameCameras)
+	{
+		if (Camera != nullptr)
+		{
+			if (Camera->ActorHasTag(Tag))
+			{
+				SetViewTargetWithBlend(Cast<AActor>(Camera));
+				return Camera;
+			}
+		}
+	}
+	return Cast<AGameCameraActor> (GetViewTarget());
 }

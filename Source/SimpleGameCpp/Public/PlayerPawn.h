@@ -8,7 +8,7 @@
 #include "PlayerPawn.generated.h"
 
 UCLASS()
-class SIMPLEGAMECPP_API APlayerPawn : public ADefaultPawn
+class SIMPLEGAMECPP_API APlayerPawn : public APawn
 {
 	GENERATED_BODY()
 

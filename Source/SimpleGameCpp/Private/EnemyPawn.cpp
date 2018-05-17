@@ -16,6 +16,7 @@ AEnemyPawn::AEnemyPawn()
 	if (StaticMeshComponent != nullptr && EnemyMeshObj.Succeeded())
 	{
 		StaticMeshComponent->SetStaticMesh(EnemyMeshObj.Object);
+		StaticMeshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 		RootComponent = StaticMeshComponent;
 	}
 

@@ -10,6 +10,7 @@ AEnemyProjectile::AEnemyProjectile()
 	if (StaticMeshComponent != nullptr)
 	{
 		StaticMeshComponent->SetStaticMesh(ProjectileMesh.Object);
+		StaticMeshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	}
 
 	OnActorBeginOverlap.AddDynamic(this, &AEnemyProjectile::OnBeginOverlap);

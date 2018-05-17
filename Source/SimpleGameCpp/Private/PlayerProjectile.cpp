@@ -11,6 +11,7 @@ APlayerProjectile::APlayerProjectile()
 	if (StaticMeshComponent != nullptr && ProjectileMesh.Succeeded())
 	{
 		StaticMeshComponent->SetStaticMesh(ProjectileMesh.Object);
+		StaticMeshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	}
 
 	OnActorBeginOverlap.AddDynamic(this, &APlayerProjectile::OnBeginOverlap);

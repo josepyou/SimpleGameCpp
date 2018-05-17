@@ -13,6 +13,8 @@ AEnemyProjectile::AEnemyProjectile()
 		StaticMeshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	}
 
+	Tags.AddUnique(TEXT("EnemyType"));
+
 	OnActorBeginOverlap.AddDynamic(this, &AEnemyProjectile::OnBeginOverlap);
 
 }
@@ -28,7 +30,13 @@ void AEnemyProjectile::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActo
 	UWorld* World = GetWorld();
 	if (World != nullptr)
 	{
-		World->DestroyActor(this);
+		if (OtherActor != nullptr)
+		{
+			if (OtherActor->ActorHasTag(TEXT("PlayerType")))
+			{
+				World->DestroyActor(this);
+			}
+		}
 	}
 
 }

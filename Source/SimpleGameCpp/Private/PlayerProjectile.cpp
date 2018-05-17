@@ -3,6 +3,8 @@
 #include "PlayerProjectile.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/World.h"
+#include "Public/EnemyPawn.h"
+#include "Public/EnemyProjectile.h"
 
 APlayerProjectile::APlayerProjectile()
 	: Super()
@@ -13,6 +15,8 @@ APlayerProjectile::APlayerProjectile()
 		StaticMeshComponent->SetStaticMesh(ProjectileMesh.Object);
 		StaticMeshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	}
+
+	Tags.AddUnique(TEXT("PlayerType"));
 
 	OnActorBeginOverlap.AddDynamic(this, &APlayerProjectile::OnBeginOverlap);
 }
@@ -28,6 +32,12 @@ void APlayerProjectile::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherAct
 	UWorld* World = GetWorld();
 	if (World != nullptr)
 	{
-		World->DestroyActor(this);
+		if (OtherActor != nullptr)
+		{
+			if (OtherActor->ActorHasTag(TEXT("EnemyType")))
+			{
+				World->DestroyActor(this);
+			}
+		}
 	}
 }

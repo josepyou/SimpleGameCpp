@@ -112,6 +112,16 @@ void AMainGamePlayerController::OnPauseMenu()
 
 void AMainGamePlayerController::OnPauseMenuGotoTitleButton()
 {
+	if (PauseMenuWidget != nullptr)
+	{
+		PauseMenuWidget->CloseMenu();
+
+		SetInputMode(FInputModeGameOnly());
+		bShowMouseCursor = true;
+
+		SetPause(false);
+		UGameplayStatics::OpenLevel(this, TEXT("/Game/GameTitle"));
+	}
 }
 
 void AMainGamePlayerController::OnPauseMenuCloseButton()

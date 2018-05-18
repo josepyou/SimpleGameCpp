@@ -29,6 +29,7 @@ APlayerPawn::APlayerPawn(const FObjectInitializer& ObjectInitializer)
 	if (StaticMeshComponent != nullptr)
 	{
 		StaticMeshComponent->SetupAttachment(RootComponent);
+		StaticMeshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	}
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>PlayerMeshObj(TEXT("/Game/SM_Player.SM_Player"));
@@ -42,6 +43,16 @@ APlayerPawn::APlayerPawn(const FObjectInitializer& ObjectInitializer)
 	{
 		ProjectileClass = PlayerProjectileClass.Class;
 	}
+
+	OnActorBeginOverlap.AddDynamic(this, &APlayerPawn::OnBeginOverlap);
+
+	static ConstructorHelpers::FClassFinder<AActor> PlayerExplosionClass(TEXT("/Game/StarterContent/Blueprints/Blueprint_Effect_Explosion"));
+	if (PlayerExplosionClass.Succeeded())
+	{
+		ExplosionClass = PlayerExplosionClass.Class;
+	}
+
+	Tags.AddUnique(TEXT("PlayerType"));
 
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -81,7 +92,7 @@ void APlayerPawn::Fire()
 	if (World != nullptr)
 	{
 		FRotator SpawnRotator = FRotator::ZeroRotator;
-		FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 50.0f, 0.0f);
+		FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 100.0f, 0.0f);
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
@@ -89,3 +100,17 @@ void APlayerPawn::Fire()
 		World->SpawnActor<APlayerProjectile>(ProjectileClass, SpawnLocation, SpawnRotator, SpawnParams);
 	}
 }
+
+void APlayerPawn::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	UWorld* World = GetWorld();
+	if (World != nullptr)
+	{
+		FRotator SpawnRotator = FRotator::ZeroRotator;
+		FVector SpawnLocation = GetActorLocation();
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		World->SpawnActor<AActor>(ExplosionClass, SpawnLocation, SpawnRotator, SpawnParams);
+	}
+}
+

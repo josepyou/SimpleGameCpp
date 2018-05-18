@@ -4,7 +4,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/StaticMesh.h"
 #include "Public/EnemyProjectile.h"
-
+#include "Particles/ParticleSystem.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEnemyPawn::AEnemyPawn()
@@ -15,6 +16,7 @@ AEnemyPawn::AEnemyPawn()
 	if (StaticMeshComponent != nullptr && EnemyMeshObj.Succeeded())
 	{
 		StaticMeshComponent->SetStaticMesh(EnemyMeshObj.Object);
+		StaticMeshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 		RootComponent = StaticMeshComponent;
 	}
 
@@ -24,6 +26,15 @@ AEnemyPawn::AEnemyPawn()
 		ProjectileClass = EnemyProjectileClass.Class;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ExplosionParticleObj(TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"));
+	if (ExplosionParticleObj.Succeeded())
+	{
+		ExplosionParticle = ExplosionParticleObj.Object;
+	}
+
+	OnActorBeginOverlap.AddDynamic(this, &AEnemyPawn::OnBeginOverlap);
+
+	Tags.AddUnique(TEXT("EnemyType"));
 
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -64,7 +75,7 @@ void AEnemyPawn::Tick(float DeltaTime)
 		if (World != nullptr)
 		{
 			FRotator SpawnRotator = FRotator::ZeroRotator;
-			FVector SpawnLocation = GetActorLocation() + FVector(0.0f, -50.0f, 0.0f);
+			FVector SpawnLocation = GetActorLocation() + FVector(0.0f, -100.0f, 0.0f);
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
 			World->SpawnActor<AEnemyProjectile>(ProjectileClass, SpawnLocation, SpawnRotator, SpawnParams);
@@ -84,4 +95,10 @@ void AEnemyPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+
+void AEnemyPawn::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	UGameplayStatics::SpawnEmitterAttached(ExplosionParticle, GetRootComponent(), NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset);
+}
+
 

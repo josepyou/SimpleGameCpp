@@ -10,7 +10,13 @@ AEnemyProjectile::AEnemyProjectile()
 	if (StaticMeshComponent != nullptr)
 	{
 		StaticMeshComponent->SetStaticMesh(ProjectileMesh.Object);
+		StaticMeshComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	}
+
+	Tags.AddUnique(TEXT("EnemyType"));
+
+	OnActorBeginOverlap.AddDynamic(this, &AEnemyProjectile::OnBeginOverlap);
+
 }
 
 void AEnemyProjectile::Tick(float DeltaTime)
@@ -19,3 +25,18 @@ void AEnemyProjectile::Tick(float DeltaTime)
 	MoveProjectile(FVector(0.0f, -200.0f, 0.0f), DeltaTime);
 }
 
+void AEnemyProjectile::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	UWorld* World = GetWorld();
+	if (World != nullptr)
+	{
+		if (OtherActor != nullptr)
+		{
+			if (OtherActor->ActorHasTag(TEXT("PlayerType")))
+			{
+				World->DestroyActor(this);
+			}
+		}
+	}
+
+}

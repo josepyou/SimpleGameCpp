@@ -19,4 +19,6 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+		void OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 };

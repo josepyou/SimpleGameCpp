@@ -10,7 +10,6 @@ AMainGameProjectile::AMainGameProjectile()
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	RootComponent = StaticMeshComponent;
 
-
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -21,6 +20,7 @@ void AMainGameProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SetLifeSpan(3.0f);
 }
 
 // Called every frame

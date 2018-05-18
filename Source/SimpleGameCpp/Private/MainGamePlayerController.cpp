@@ -4,6 +4,21 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "PlayerPawn.h"
+#include "GameCameraActor.h"
+#include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
+#include "PauseMenuWidget.h"
+#include "Components/Button.h"
+
+AMainGamePlayerController::AMainGamePlayerController()
+	: Super()
+{
+	static ConstructorHelpers::FClassFinder<UPauseMenuWidget> PauseMenuClass(TEXT("/Game/WBP_PauseMenu"));
+	if (PauseMenuClass.Succeeded())
+	{
+		PauseMenuWidgetClass = PauseMenuClass.Class;
+	}
+}
 
 void AMainGamePlayerController::SetupInputComponent()
 {
@@ -15,6 +30,9 @@ void AMainGamePlayerController::SetupInputComponent()
 
 	GetMutableDefault<UInputSettings>()->AddActionMapping(FInputActionKeyMapping("Player_Fire", EKeys::LeftMouseButton));
 	InputComponent->BindAction("Player_Fire", IE_Pressed, this, &AMainGamePlayerController::Fire);
+
+	GetMutableDefault<UInputSettings>()->AddActionMapping(FInputActionKeyMapping("Player_Pause", EKeys::P));
+	InputComponent->BindAction("Player_Pause", IE_Pressed, this, &AMainGamePlayerController::OnPauseMenu);
 }
 
 void AMainGamePlayerController::AddPitchInput(float val)
@@ -34,4 +52,86 @@ void AMainGamePlayerController::Fire()
 	{
 		PossessedPawn->Fire();
 	}
+}
+
+void AMainGamePlayerController::BeginPlay()
+{
+	TArray<AActor*> FindedActors;
+	UGameplayStatics::GetAllActorsOfClass(this, AGameCameraActor::StaticClass(), FindedActors);
+
+	for (AActor* Actor : FindedActors)
+	{
+		AGameCameraActor* Camera = Cast<AGameCameraActor>(Actor);
+		if (Camera != nullptr)
+		{
+			GameCameras.Add(Camera);
+		}
+	}
+
+	if (PauseMenuWidgetClass != nullptr)
+	{
+		PauseMenuWidget = CreateWidget<UPauseMenuWidget>(this, PauseMenuWidgetClass);
+	}
+
+	PauseMenuWidget->GoToTitleButton->OnClicked.AddDynamic(this, &AMainGamePlayerController::OnPauseMenuGotoTitleButton);
+	PauseMenuWidget->CloseMenuButton->OnClicked.AddDynamic(this, &AMainGamePlayerController::OnPauseMenuCloseButton);
+
+	Super::BeginPlay();
+}
+
+AGameCameraActor* AMainGamePlayerController::ChangeGameCamera(const FName& Tag)
+{
+	for (AGameCameraActor* Camera : GameCameras)
+	{
+		if (Camera != nullptr)
+		{
+			if (Camera->ActorHasTag(Tag))
+			{
+				SetViewTargetWithBlend(Cast<AActor>(Camera));
+				return Camera;
+			}
+		}
+	}
+	return Cast<AGameCameraActor> (GetViewTarget());
+}
+
+void AMainGamePlayerController::OnPauseMenu()
+{
+	if (PauseMenuWidget != nullptr)
+	{
+		if (!PauseMenuWidget->IsInViewport())
+		{
+			PauseMenuWidget->AddToViewport();
+
+			SetInputMode(FInputModeUIOnly().SetLockMouseToViewportBehavior(EMouseLockMode::LockOnCapture).SetWidgetToFocus(PauseMenuWidget->TakeWidget()));
+			bShowMouseCursor = true;
+		}
+	}
+	SetPause(true);
+}
+
+void AMainGamePlayerController::OnPauseMenuGotoTitleButton()
+{
+	if (PauseMenuWidget != nullptr)
+	{
+		PauseMenuWidget->CloseMenu();
+
+		SetInputMode(FInputModeGameOnly());
+		bShowMouseCursor = true;
+
+		SetPause(false);
+		UGameplayStatics::OpenLevel(this, TEXT("/Game/GameTitle"));
+	}
+}
+
+void AMainGamePlayerController::OnPauseMenuCloseButton()
+{
+	if (PauseMenuWidget != nullptr)
+	{
+		PauseMenuWidget->CloseMenu();
+
+		SetInputMode(FInputModeGameOnly());
+		bShowMouseCursor = false;
+	}
+	SetPause(false);
 }
